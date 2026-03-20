@@ -7,7 +7,7 @@
 ![Providers](https://img.shields.io/badge/AI%20Providers-20+-00e5a0?style=for-the-badge)
 ![Zero Install](https://img.shields.io/badge/Zero%20Install-HTML-ffd166?style=for-the-badge)
 
-**A fully browser-based, multi-agent AI platform that simulates an entire software company — 14 specialized AI agents working in sequence to plan, design, code, review, test, and ship your project.**
+**NeuralForge is a NextGen AI workspace with a powerful multi-agent system that builds software autonomously. It features dual modes (Chat + Build), real-time workflow visualization, smart model fallback, testing, and an entire software company — 14 specialized AI agents working in sequence to plan, design, code, review, test, and ship your project.**
 
 [🚀 Live Demo](https://madhanblastz.github.io/NeuralForge-Multi-Agent-AI-System/) 
 
