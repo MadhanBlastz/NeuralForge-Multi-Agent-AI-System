@@ -18,7 +18,7 @@
 
 ## ✨ What Is NeuralForge?
 
-NeuralForge v11 is a **single HTML file** that runs a complete AI software development company in your browser. You describe a project — *"Build a weather app with live API and dark mode"* — and 14 specialized AI agents automatically collaborate to produce:
+NeuralForge v11 is a complete AI software development company in your browser. You describe a project — *"Build a weather app with live API and dark mode"* — and 14 specialized AI agents automatically collaborate to produce:
 
 - 📄 Complete, production-ready source files (HTML, CSS, JS, Python, etc.)
 - 🏗 Architectural documentation and sprint plans
@@ -229,7 +229,7 @@ Refined Master Prompt Sections:
   • Definition of Done
 ```
 
-This single document becomes the **north star** for all 11 downstream agents.
+This project becomes the **north star** for all 11 downstream agents.
 
 ---
 
@@ -387,7 +387,7 @@ Select code in the editor, open AI Edit, choose an action, and click **Apply to 
 
 ### Zero-Install Method (Recommended)
 
-1. Download `neuralforge_v11_enhanced.html`
+1. Download the project
 2. Open it in any modern browser (Chrome, Firefox, Edge, Safari)
 3. Click ⚙️ **Settings** in the top-right
 4. Add a free API key (OpenRouter recommended — no credit card needed):
@@ -505,33 +505,14 @@ After each build starts, a title generator runs in the background to shorten lon
 ## 🔧 Development Notes
 
 ### File Structure
-NeuralForge v11 is a **single self-contained HTML file**:
 
 ```
-neuralforge_v11_enhanced.html
-├── <head>          Google Fonts (Space Grotesk, Fira Code, Outfit)
-├── <style>         ~800 lines of CSS with design tokens
-├── <body>          Full application HTML (sidebar, editor, modals)
-└── <script>        ~6,500 lines of JavaScript:
-    ├── AGENTS[]         14 agent definitions
-    ├── AGENT_REGISTRY   Capability & data-flow map
-    ├── STAGES[]         14 build stage definitions
-    ├── SEQ[]            Ordered pipeline sequence
-    ├── TEMPLATES[]      12 project templates
-    ├── PROVIDER_META    20+ AI provider configs
-    ├── VAULT            Multi-key storage & fallback system
-    ├── MODEL_ROUTER     Dynamic task-to-model routing
-    ├── FEEDBACK         Developer↔Reviewer loop engine
-    ├── MEETING          Multi-agent meeting system
-    ├── CODEBASE         Semantic file indexing & search
-    ├── MEM              Long-term memory system
-    ├── WEB_SEARCHER     Pre-build research agent
-    ├── ABORT_GUARD      Token budget enforcement
-    ├── CHAIN_ENGINE     Pipeline state machine
-    ├── DYNAMIC_ROUTER   Intent-based agent routing
-    ├── FW_CONFIG        Framework-specific instructions
-    ├── PROMPTS          All 14 agent system prompts
-    └── go()             Main build orchestrator
+neuralforge
+├── index.html         
+├── styles        
+     └── main.css
+├── scripts
+     └── app.js 
 ```
 
 ### localStorage Keys
@@ -559,13 +540,9 @@ neuralforge_v11_enhanced.html
 
 ---
 
-## 📜 License
-
-MIT License — free to use, modify, and distribute. See `LICENSE` for details.
-
 ---
 
-## 🙏 Credits & Acknowledgements
+## 🙏 Acknowledgements
 
 Built with:
 - [OpenRouter](https://openrouter.ai) — multi-provider AI routing
@@ -578,7 +555,7 @@ Built with:
 
 <div align="center">
 
-**NeuralForge v11** — *Your AI Software Company in a Single File*
+**NeuralForge v11** — *Your AI Software Company*
 
 Made with 🧠 and lots of tokens
 
