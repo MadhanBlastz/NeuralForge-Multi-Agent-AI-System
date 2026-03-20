@@ -5,8 +5,7 @@
 ![NeuralForge](https://img.shields.io/badge/NeuralForge-v11.0-7c6af7?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0wIDE4Yy00LjQxIDAtOC0zLjU5LTgtOHMzLjU5LTggOC04IDggMy41OSA4IDgtMy41OSA4LTggOHoiLz48L3N2Zz4=)
 ![Agents](https://img.shields.io/badge/AI%20Agents-14-00d4ff?style=for-the-badge)
 ![Providers](https://img.shields.io/badge/AI%20Providers-20+-00e5a0?style=for-the-badge)
-![Zero Install](https://img.shields.io/badge/Zero%20Install-Single%20HTML-ffd166?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-f07178?style=for-the-badge)
+![Zero Install](https://img.shields.io/badge/Zero%20Install-HTML-ffd166?style=for-the-badge)
 
 **A fully browser-based, multi-agent AI platform that simulates an entire software company — 14 specialized AI agents working in sequence to plan, design, code, review, test, and ship your project.**
 
