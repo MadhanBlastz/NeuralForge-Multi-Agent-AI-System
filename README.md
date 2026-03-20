@@ -9,7 +9,7 @@
 
 **A fully browser-based, multi-agent AI platform that simulates an entire software company — 14 specialized AI agents working in sequence to plan, design, code, review, test, and ship your project.**
 
-[🚀 Live Demo](#) · [📖 Documentation](#how-it-works) · [⚙️ Setup](#getting-started) · [🤖 Agents](#the-14-agent-pipeline)
+[🚀 Live Demo]([#](https://madhanblastz.github.io/NeuralForge-Multi-Agent-AI-System/)) 
 
 </div>
 
