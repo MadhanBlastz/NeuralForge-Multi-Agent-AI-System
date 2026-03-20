@@ -545,11 +545,10 @@ neuralforge
 ## 🙏 Acknowledgements
 
 Built with:
-- [OpenRouter](https://openrouter.ai) — multi-provider AI routing
-- [Groq](https://groq.com) — ultra-fast LLM inference
-- [DeepSeek](https://deepseek.com) — reasoning models
-- [Meta Llama](https://llama.meta.com) — open-source LLMs
-- [Google Fonts](https://fonts.google.com) — Space Grotesk, Fira Code, Outfit
+- Sonnet 4.5 / Sonnet 4.6 / Haiku 4.5
+- GPT-4o / GPT-5
+- Grok-4.20
+- Google Fonts — Space Grotesk, Fira Code, Outfit
 
 ---
 
