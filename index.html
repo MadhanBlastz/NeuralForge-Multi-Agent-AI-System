@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>NeuralForge v10 — Multi-Key AI System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&family=Outfit:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <!-- CSS -->
+  <link rel="stylesheet" href="styles/main.css">
+
+</head>
+<body>
+<div class="aurora"><div class="aurora-1"></div><div class="aurora-2"></div><div class="aurora-3"></div></div>
+<div id="sbo" onclick="closeSidebar()"></div>
+
+<div id="app" class="rc">
+
+<!-- ═══ HEADER ═══ -->
+<header id="hd" role="banner">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+    <button id="mob-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar menu" aria-expanded="false">☰</button>
+    <div class="logo" role="img" aria-label="NeuralForge v5 Logo">
+      <div class="logo-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="logo-text">Neural<span>Forge</span><span class="logo-ver">v11</span></div>
+    </div>
+  </div>
+  <div class="hd-center">
+    <div class="sdot" id="sdot" role="status" aria-label="Connection status"></div>
+    <div class="proj-chip" id="pbadge" aria-live="polite">No project — describe one below</div>
+  </div>
+  <nav class="hd-right" role="menubar" aria-label="Main Menu">
+    <div id="tokbadge" role="status" aria-label="Token usage"><span>~tokens</span><span class="tk-num" id="tknum">0</span><div class="tk-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="tk-fill" id="tkfill" style="width:0%"></div></div></div>
+    <div id="cost-tracker" role="status" aria-label="Cost tracker" title="Estimated token cost this build">💰 <span class="cost-num" id="cost-num">$0.000</span><div class="cost-bar"><div class="cost-fill" id="cost-fill" style="width:0%"></div></div></div>
+    <div id="abort-guard" title="Runaway protection active">🛡 Guard</div>
+    <div id="btimer" role="timer" aria-label="Build timer"><div class="td"></div><span id="btxt">0:00</span></div>
+    <div class="mem-badge" id="mem-badge" onclick="toggleMemPanel()" title="Long-term memory">🧠 <span id="mem-count">0</span></div>
+    <div class="active-key-badge" id="active-key-badge" title="Active API configuration">⚡ <span id="active-key-label">No key</span></div>
+    <button class="hbtn" role="menuitem" onclick="openTpl()" title="Templates (Ctrl+T)" aria-label="Templates">🎯</button>
+    <button class="hbtn" role="menuitem" onclick="openShortcuts()" title="Shortcuts (?)" aria-label="Keyboard shortcuts">⌨️</button>
+    <button class="hbtn" role="menuitem" onclick="openHistory()" title="History" aria-label="Session history">🕓</button>
+    <button class="hbtn" role="menuitem" onclick="openConfig()" title="Settings (⚙️)" aria-label="Settings">⚙️</button>
+    <button class="hbtn" role="menuitem" id="theme-btn" onclick="toggleTheme()" title="Theme" aria-label="Toggle theme">🌙</button>
+    <button class="btn-new" role="menuitem" onclick="newSession()" aria-label="New session">＋ New</button>
+  </nav>
+</header>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside id="sb">
+  <button class="pcol" id="sbcol" onclick="toggleLeft()" title="Collapse">◀</button>
+  <div class="wf-viz" id="wf-viz">
+    <div class="wf-label">Company Workflow</div>
+    <div class="wf-chain" id="wf-chain"></div>
+  </div>
+  <div class="pipeline-indicator" id="pipeline-ind">
+    <span>⚡ Pipeline:</span>
+    <span class="pi-stage" id="pi-from">—</span>
+    <span class="pi-arrow">→</span>
+    <span class="pi-stage" id="pi-to">—</span>
+    <span class="pi-data" id="pi-data"></span>
+  </div>
+  <!-- V8: MEMORY PANEL -->
+  <div class="mem-panel" id="mem-panel-sb">
+    <div class="mem-header">
+      <span class="mem-title">🧠 Long-Term Memory</span>
+      <button class="mem-clear" onclick="clearMemory()">Clear</button>
+    </div>
+    <div class="mem-items" id="mem-items-sb"><div class="mem-empty">No memories yet</div></div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-label">AI Agents</div>
+    <div id="agent-list"></div>
+  </div>
+  <div class="prog-sec">
+    <div class="prog-lbl"><span>Build Progress</span><span id="pct">0%</span></div>
+    <div class="prog-track"><div class="prog-fill" id="pfill"></div></div>
+  </div>
+  <div id="stage-list"></div>
+  <div class="hist-sec">
+    <div class="hist-lbl">Recent Sessions</div>
+    <div id="hist-list"></div>
+  </div>
+
+  <!-- MOBILE NAV BAR — visible only on mobile, inside sidebar -->
+  <div class="mob-nav" id="mob-nav">
+    <button class="mob-nav-btn" onclick="openConfig();closeSidebar()">
+      <span class="mn-icon">⚙️</span><span class="mn-label">Settings</span>
+    </button>
+    <button class="mob-nav-btn" onclick="openHistory();closeSidebar()">
+      <span class="mn-icon">🕓</span><span class="mn-label">History</span>
+    </button>
+    <button class="mob-nav-btn" onclick="openTpl();closeSidebar()">
+      <span class="mn-icon">🎯</span><span class="mn-label">Templates</span>
+    </button>
+    <button class="mob-nav-btn" onclick="toggleTheme()">
+      <span class="mn-icon" id="mob-theme-icon">🌙</span><span class="mn-label">Theme</span>
+    </button>
+    <button class="mob-nav-btn" onclick="newSession();closeSidebar()">
+      <span class="mn-icon">＋</span><span class="mn-label">New</span>
+    </button>
+  </div>
+</aside>
+
+<!-- ═══ CHAT CENTER ═══ -->
+<main id="ct">
+  <button id="sfab" onclick="scrollChat(true)">↓</button>
+
+  <!-- ══ MODE TOGGLE BAR ══ -->
+  <div id="mode-toggle-bar">
+    <div class="mode-tab chat-tab active" id="mode-chat-tab" onclick="switchMainMode('chat')">
+      <span class="mode-ic">💬</span>
+      <span>Chat</span>
+      <span class="mode-badge" id="chat-msg-badge">AI Assistant</span>
+    </div>
+    <div class="mode-divider"></div>
+    <div class="mode-tab build-tab" id="mode-build-tab" onclick="switchMainMode('build')">
+      <span class="mode-ic">🔨</span>
+      <span>Build</span>
+      <span class="mode-badge" id="build-msg-badge">14 Agents</span>
+    </div>
+  </div>
+
+  <!-- ══ CHAT MODE ══ -->
+  <div id="chat-mode">
+    <!-- Messages -->
+    <div id="chat-msgs">
+      <div id="chat-welcome">
+        <div class="cw-icon">💬</div>
+        <div class="cw-title">Chat with AI</div>
+        <div class="cw-sub">Ask anything — code questions, ideas, explanations, debugging help. This is your general-purpose AI assistant.</div>
+        <div class="cw-chips">
+          <div class="cw-chip" onclick="fillChat(this)">🤔 Explain async/await</div>
+          <div class="cw-chip" onclick="fillChat(this)">💡 Ideas for my portfolio</div>
+          <div class="cw-chip" onclick="fillChat(this)">🐛 Debug this error</div>
+          <div class="cw-chip" onclick="fillChat(this)">⚡ React vs Vue comparison</div>
+          <div class="cw-chip" onclick="fillChat(this)">🎨 Best CSS animation tips</div>
+          <div class="cw-chip" onclick="fillChat(this)">🔐 JWT vs sessions explained</div>
+          <div class="cw-chip" onclick="fillChat(this)">📱 Mobile-first design tips</div>
+          <div class="cw-chip" onclick="fillChat(this)">🚀 Deploy to Vercel steps</div>
+        </div>
+        <div class="chat-switch-hint" onclick="switchMainMode('build')" style="margin-top:12px">
+          🔨 Ready to build something? Switch to <strong>Build Mode</strong> →
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Input Bar -->
+    <div id="chat-input-bar">
+      <!-- Active tool chip -->
+      <div class="chat-active-tool" id="chat-active-tool">
+        <div class="cat-chip" id="cat-chip"></div>
+      </div>
+      <!-- Attached files preview -->
+      <div class="chat-attachments" id="chat-attachments"></div>
+      <div class="chat-input-row" style="position:relative">
+        <!-- + Tools Button (left) -->
+        <div style="position:relative;flex-shrink:0">
+          <button class="chat-plus-btn" id="chat-plus-btn" onclick="toggleToolsMenu(event)" title="Tools & Modes" aria-label="Open tools menu">+</button>
+          <!-- Tools Dropdown Menu -->
+          <div class="chat-tools-menu" id="chat-tools-menu">
+            <span class="ctm-label">AI Tools</span>
+            <div class="ctm-item" onclick="selectChatTool('enhance')">
+              <div class="ctm-ic" style="background:rgba(124,106,247,.15);color:var(--a)">✨</div>
+              <div class="ctm-info"><span class="ctm-name">Prompt Enhancer</span><span class="ctm-desc">Improve your prompt before sending</span><div class="ctm-model" id="ctm-model-enhance"><span class="ctm-model-icon">⏳</span><span class="ctm-model-name">loading…</span></div></div>
+            </div>
+            <div class="ctm-item" onclick="selectChatTool('summarize')">
+              <div class="ctm-ic" style="background:rgba(0,212,255,.12);color:var(--cyan)">📋</div>
+              <div class="ctm-info"><span class="ctm-name">Summarize</span><span class="ctm-desc">Condense long text into key points</span><div class="ctm-model" id="ctm-model-summarize"><span class="ctm-model-icon">⏳</span><span class="ctm-model-name">loading…</span></div></div>
+            </div>
+            <div class="ctm-item" onclick="selectChatTool('rewrite')">
+              <div class="ctm-ic" style="background:rgba(0,229,160,.12);color:var(--green)">✍️</div>
+              <div class="ctm-info"><span class="ctm-name">Rewrite</span><span class="ctm-desc">Rephrase for clarity or tone</span><div class="ctm-model" id="ctm-model-rewrite"><span class="ctm-model-icon">⏳</span><span class="ctm-model-name">loading…</span></div></div>
+            </div>
+            <div class="ctm-item" onclick="selectChatTool('translate')">
+              <div class="ctm-ic" style="background:rgba(255,209,102,.12);color:var(--yellow)">🌐</div>
+              <div class="ctm-info"><span class="ctm-name">Translator</span><span class="ctm-desc">Translate to any language</span><div class="ctm-model" id="ctm-model-translate"><span class="ctm-model-icon">⏳</span><span class="ctm-model-name">loading…</span></div></div>
+            </div>
+            <div class="ctm-divider"></div>
+            <span class="ctm-label">Generate & Analyze</span>
+            <div class="ctm-item" onclick="selectChatTool('imagine')">
+              <div class="ctm-ic" style="background:rgba(255,110,180,.12);color:var(--pink)">🎨</div>
+              <div class="ctm-info"><span class="ctm-name">Image Generator</span><span class="ctm-desc">Create images from a description</span><div class="ctm-model" id="ctm-model-imagine"><span class="ctm-model-icon">⏳</span><span class="ctm-model-name">loading…</span></div></div>
+            </div>
+            <div class="ctm-item" onclick="selectChatTool('analyze')">
+              <div class="ctm-ic" style="background:rgba(255,159,67,.12);color:var(--orange)">📊</div>
+              <div class="ctm-info"><span class="ctm-name">Data Analyser</span><span class="ctm-desc">Visualize & chart your data</span><div class="ctm-model" id="ctm-model-analyze"><span class="ctm-model-icon">⏳</span><span class="ctm-model-name">loading…</span></div></div>
+            </div>
+            <div class="ctm-item" onclick="selectChatTool('qa')">
+              <div class="ctm-ic" style="background:rgba(0,212,255,.12);color:var(--cyan)">📄</div>
+              <div class="ctm-info"><span class="ctm-name">Q&amp;A on File</span><span class="ctm-desc">Ask questions about an uploaded doc</span><div class="ctm-model" id="ctm-model-qa"><span class="ctm-model-icon">⏳</span><span class="ctm-model-name">loading…</span></div></div>
+            </div>
+            <div class="ctm-item" onclick="selectChatTool('search')">
+              <div class="ctm-ic" style="background:rgba(124,106,247,.15);color:var(--a)">🔍</div>
+              <div class="ctm-info"><span class="ctm-name">Web Searcher</span><span class="ctm-desc">Search the web for current info</span><div class="ctm-model" id="ctm-model-search"><span class="ctm-model-icon">⏳</span><span class="ctm-model-name">loading…</span></div></div>
+            </div>
+          </div>
+        </div>
+        <textarea id="chat-pi" rows="1" placeholder="Ask me anything…" onkeydown="chatKeydown(event)" oninput="autosize(this)"></textarea>
+        <!-- Upload Button (right, before send) -->
+        <button class="chat-upload-btn" type="button" title="Upload file / image / document" id="chat-upload-btn-wrap" onclick="document.getElementById('chat-file-input').click()">
+          📎
+          <span class="chat-upload-badge" id="chat-upload-badge"></span>
+        </button>
+        <input type="file" id="chat-file-input" multiple accept="image/*,.pdf,.txt,.md,.csv,.json,.xlsx,.docx,.pptx,.html,.js,.py,.ts,.css" onchange="handleChatFileUpload(event)" style="display:none"/>
+        <button class="chat-send-btn" id="chat-send-btn" onclick="sendChat()" title="Send (Enter)">→</button>
+      </div>
+      <div class="chat-meta-row">
+        <select class="chat-model-sel" id="chat-model-sel" title="AI model for chat">
+          <option value="auto">🧠 Auto (best available)</option>
+          <option value="reasoning">🔮 Reasoning model</option>
+          <option value="fast">⚡ Fast model</option>
+          <option value="creative">🎨 Creative model</option>
+        </select>
+        <div class="chat-switch-hint" onclick="switchMainMode('build')" style="font-size:.6rem;padding:2px 7px">
+          🔨 Switch to Build
+        </div>
+        <button class="chat-clear-btn" onclick="clearChat()">🗑 Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ BUILD MODE ══ -->
+  <div id="build-mode">
+    <!-- PERSONA BAR -->
+    <div class="persona-bar" id="persona-bar">
+      <span class="persona-label">Mode:</span>
+      <button class="persona-btn active" data-persona="developer" onclick="setPersona('developer',this)">🧑‍💻 Developer</button>
+      <button class="persona-btn" data-persona="senior" onclick="setPersona('senior',this)">👨‍🏫 Senior</button>
+      <button class="persona-btn" data-persona="beginner" onclick="setPersona('beginner',this)">🌱 Beginner</button>
+      <button class="persona-btn" data-persona="student" onclick="setPersona('student',this)">📚 Student</button>
+      <!-- Discuss toggle button -->
+      <button id="discuss-btn" onclick="toggleDiscussPanel()" style="margin-left:auto;display:flex;align-items:center;gap:4px;padding:3px 10px;border-radius:6px;background:var(--s2);border:1px solid var(--border);font-size:.63rem;font-weight:600;color:var(--t2);cursor:pointer;transition:all .15s" title="Build Discussion Panel">
+        💬 Discuss <span id="discuss-count" style="display:none;background:var(--a);color:#fff;border-radius:10px;padding:0 4px;font-size:.52rem"></span>
+      </button>
+    </div>
+
+    <!-- REPLAY BAR -->
+    <div id="replay-bar">
+      <span style="font-size:14px">▶️</span>
+      <span style="font-weight:700;color:var(--a);font-size:.7rem">Replay</span>
+      <div class="replay-progress"><div class="replay-fill" id="replay-fill" style="width:0%"></div></div>
+      <span class="replay-step-label" id="replay-step-lbl">Step 0/14</span>
+      <button onclick="stopReplay()" style="font-size:.62rem;padding:2px 7px;border-radius:5px;background:var(--s3);border:1px solid var(--border);color:var(--t2);cursor:pointer">■ Stop</button>
+    </div>
+
+    <!-- ERROR MONITOR -->
+    <div id="err-monitor">
+      <div class="err-mon-hdr">
+        <span>🔴 Live Error Monitor</span>
+        <button onclick="clearErrMonitor()" style="font-size:.6rem;padding:1px 6px;border-radius:4px;background:var(--s3);border:1px solid var(--border);cursor:pointer;color:var(--t2)">Clear</button>
+        <button onclick="document.getElementById('err-monitor').classList.remove('show')" style="font-size:.6rem;padding:1px 6px;border-radius:4px;background:var(--s3);border:1px solid var(--border);cursor:pointer;color:var(--t2)">✕</button>
+      </div>
+      <div class="err-mon-list" id="err-mon-list"></div>
+    </div>
+    <div id="budget-cap-warn">⚠️ Budget cap reached — build stopped to prevent cost overrun</div>
+
+    <!-- BUILD LAYOUT: Pipeline chat + Discussion panel -->
+    <div id="build-layout">
+      <!-- Pipeline agent chat -->
+      <div id="build-pipeline-chat">
+        <div id="discuss-toggle" onclick="toggleDiscussPanel()" title="Build Discussion">💬 DISCUSS</div>
+
+        <!-- V8: DYNAMIC ROUTING INDICATOR -->
+        <div class="route-ind" id="route-ind">
+          <span>🎯</span>
+          <span class="route-reason" id="route-reason">Analyzing request…</span>
+          <span class="route-agent" id="route-agent"></span>
+          <span class="route-badge" id="route-badge"></span>
+        </div>
+        <div class="chat-hdr">
+          <div class="chat-tabs">
+            <div class="ctab active" onclick="switchTab(this,'chat')">🤝 Pipeline</div>
+            <div class="ctab" onclick="switchTab(this,'log')">📋 Log</div>
+          </div>
+          <div class="chat-meta">
+            <span id="msgcount">0 messages</span>
+            <button class="hbtn" style="font-size:10px" onclick="copyAllChat()" title="Copy chat">📋</button>
+          </div>
+        </div>
+        <div id="msgs">
+          <div id="welcome">
+            <div class="wlc-icon">🧠</div>
+            <div class="wlc-title">AI Software Company</div>
+            <div style="font-size:.63rem;color:var(--t3);margin-top:2px;font-family:var(--mono)">v11 · 14 Agents · WebSearcher → CEO → PromptAgent → … → Tester</div>
+            <div class="wlc-sub">14 specialized AI agents work in sequence: 🌐 Web Searcher researches best practices → 👔 CEO sets strategy → ✍️ Prompt Agent refines the brief → 👨‍💼 Manager assigns tasks → 🗺 Planner architects → 📋 PM specifies features → 🎨 Designer creates UI → 💻 Developer builds → 🔍 Reviewer checks → 🚀 Optimizer improves → ♿ A11y audits → 🐛 Debugger fixes → 📦 DevOps deploys → 🧪 Tester validates.</div>
+            <div class="wlc-tags">
+              <div class="wtag" onclick="fillPrompt(this)">🌤 Weather App</div>
+              <div class="wtag" onclick="fillPrompt(this)">⚛️ React Dashboard</div>
+              <div class="wtag" onclick="fillPrompt(this)">▲ Next.js Blog</div>
+              <div class="wtag" onclick="fillPrompt(this)">🟢 Node.js API</div>
+              <div class="wtag" onclick="fillPrompt(this)">📊 Vue Analytics</div>
+              <div class="wtag" onclick="fillPrompt(this)">🐍 Python FastAPI</div>
+            </div>
+            <div class="chat-switch-hint" onclick="switchMainMode('chat')" style="margin-top:12px;font-size:.65rem">
+              💬 Want to brainstorm first? Switch to <strong>Chat Mode</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Build Discussion Panel -->
+      <div id="build-discuss">
+        <div class="bd-hdr">
+          <span style="font-size:14px">💬</span>
+          <span class="bd-title">Build Discussion</span>
+          <div class="bd-close" onclick="toggleDiscussPanel()" title="Close panel">✕</div>
+        </div>
+
+        <div id="bd-msgs">
+          <div class="bd-empty">
+            <div style="font-size:20px;margin-bottom:6px">💬</div>
+            <strong style="color:var(--text);font-size:.72rem">Build Discussion</strong><br>
+            Discuss, ideate, and refine your project here. Select messages and inject them directly into the build pipeline.
+          </div>
+        </div>
+
+        <!-- Inject bar — shows when messages selected -->
+        <div id="bd-inject-bar">
+          <div class="bd-inject-info">
+            <span>📌</span>
+            <span><span class="bd-inject-sel" id="bd-sel-count">0</span> message(s) selected</span>
+          </div>
+          <div class="bd-inject-btns">
+            <button class="bd-inject-btn bd-inject-now" onclick="injectSelected('now')" title="Inject into active or next build now">
+              ⚡ Inject Now
+            </button>
+            <button class="bd-inject-btn bd-inject-queue" onclick="injectSelected('queue')" title="Queue for next build start">
+              📋 Queue
+            </button>
+            <button class="bd-inject-btn bd-inject-clear" onclick="clearBdSelection()">✕</button>
+          </div>
+        </div>
+
+        <!-- Discussion input -->
+        <div id="bd-input-row">
+          <textarea id="bd-pi" rows="1" placeholder="Discuss your build ideas…" onkeydown="bdKeydown(event)" oninput="autosize(this)"></textarea>
+          <button class="bd-send" onclick="sendBdMsg()" title="Send">→</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ═══ INPUT (Build Mode only) ═══ -->
+<div id="ip">
+  <div class="ip-row">
+    <div class="inpw">
+      <textarea id="pi" rows="1" placeholder="Describe your project… e.g. Build a weather app with live API and dark mode"></textarea>
+      <button class="bmicbtn" id="micbtn" onclick="toggleMic()" title="Voice input">🎤</button>
+    </div>
+    <button class="bstopbtn" id="stopbtn" onclick="stopBuild()">⏹ Stop</button>
+    <button class="bintbtn" id="intbtn" onclick="interruptBuild()" title="Interrupt and redirect agents mid-build" style="display:none">💬 Redirect</button>
+    <button class="bbuildbtn" id="buildbtn" onclick="go()"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>Build</button>
+    <button class="brunbtn" id="runbtn" onclick="runPreview()" disabled>▶ Run</button>
+  </div>
+  <div class="hints">
+    <span style="font-size:.64rem;color:var(--t3);flex-shrink:0">Try:</span>
+    <div class="htag" onclick="fillPrompt(this)">🎮 Browser Game</div>
+    <div class="htag" onclick="fillPrompt(this)">⚛️ React App</div>
+    <div class="htag" onclick="fillPrompt(this)">🟢 REST API</div>
+    <div class="htag" onclick="fillPrompt(this)">▲ Next.js App</div>
+    <div class="htag" onclick="fillPrompt(this)">🐍 Flask API</div>
+    <button class="enhancebtn" id="enhbtn" onclick="enhancePrompt()">✨ Enhance</button>
+    <span class="charhint" id="charhint"></span>
+  </div>
+  <!-- FRAMEWORK SELECTOR -->
+  <div class="fwsel" id="fwsel">
+    <span class="fwsel-label">Stack:</span>
+    <div class="fwtab active" data-fw="vanilla" onclick="setFramework('vanilla',this)" title="Vanilla HTML/CSS/JS — runs directly in browser">🌐 Vanilla</div>
+    <div class="fwtab" data-fw="react" onclick="setFramework('react',this)" title="React via CDN — runs in browser, no build needed">⚛️ React</div>
+    <div class="fwtab" data-fw="vue" onclick="setFramework('vue',this)" title="Vue 3 via CDN — runs in browser, no build needed">💚 Vue 3</div>
+    <div class="fwtab" data-fw="svelte" onclick="setFramework('svelte',this)" title="Svelte — scaffold + package.json for local dev">🔥 Svelte</div>
+    <div class="fwtab" data-fw="nextjs" onclick="setFramework('nextjs',this)" title="Next.js — full scaffold with pages, API routes, package.json">▲ Next.js</div>
+    <div class="fwtab" data-fw="node" onclick="setFramework('node',this)" title="Node.js + Express — full backend with REST API">🟢 Node.js</div>
+    <div class="fwtab" data-fw="python" onclick="setFramework('python',this)" title="Python Flask/FastAPI — backend scaffold with requirements.txt">🐍 Python</div>
+    <div class="fw-badge" id="fw-badge">🌐 Vanilla</div>
+  </div>
+</div>
+
+<!-- ═══ RIGHT PANEL ═══ -->
+<aside id="rp">
+  <button class="pcol" id="rpcol" onclick="toggleRight()" title="Collapse">▶</button>
+  <div class="rp-hdr">
+    <div class="rp-title">Code Output</div>
+    <div class="rp-tabs">
+      <div class="rtab active" id="rt-files" onclick="switchRTab(this,'files')">Files</div>
+      <div class="rtab" id="rt-editor" onclick="switchRTab(this,'editor')">Editor</div>
+      <div class="rtab" id="rt-preview" onclick="switchRTab(this,'preview')">▶ Preview</div>
+    </div>
+  </div>
+  <div id="ftree"><div id="ftree-empty" style="padding:8px;font-size:.69rem;color:var(--t3)">No files yet — build a project</div></div>
+  <div id="ceditor">
+    <div class="ced-bar" id="cedbar">
+      <span class="ced-file" id="cedfile">—</span>
+      <div class="cacts">
+        <button class="cb" onclick="toggleSearch()" title="Search Ctrl+F">🔍</button>
+        <button class="cb run" onclick="runPreview()">▶</button>
+        <button class="cb" id="copybtn" onclick="copyFile()">📋</button>
+        <button class="cb dl" onclick="saveFile()">⬇</button>
+      </div>
+    </div>
+    <div class="csw" id="csw">
+      <input type="text" id="csinp" placeholder="Search…" oninput="doSearch()" onkeydown="searchNav(event)"/>
+      <span class="cscnt" id="cscnt"></span>
+      <div class="csnav">
+        <button class="csb" onclick="searchStep(-1)">↑</button>
+        <button class="csb" onclick="searchStep(1)">↓</button>
+        <button class="csb" onclick="toggleSearch()">✕</button>
+      </div>
+    </div>
+    <div id="cdisp"><div class="empty-code"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><div>Code appears here after build</div></div></div>
+  </div>
+  <div id="inlprev">
+    <div class="ipbar">
+      <div class="iptitle" id="iptitle">Preview</div>
+      <button class="cb run" onclick="refreshInline()">↺</button>
+      <button class="cb" onclick="popPrev()">↗</button>
+    </div>
+    <div class="ipload" id="ipload"><div class="spin"></div><div>Rendering…</div></div>
+    <iframe id="inlifr" sandbox="allow-scripts allow-same-origin allow-forms" title="Preview"></iframe>
+  </div>
+  <div class="suggp" id="suggp">
+    <div class="sugg-ttl">🤖 AI Suggestions</div>
+    <div class="sugg-list" id="sugglist"></div>
+    <button class="sugg-close" onclick="document.getElementById('suggp').classList.remove('show')">Dismiss</button>
+  </div>
+  <div class="expbar" id="expbar">
+    <span style="font-size:.63rem;color:var(--t3);flex-shrink:0">Export:</span>
+    <button class="eb green" onclick="exportGist()">🐙 Gist</button>
+    <button class="eb" onclick="copyAllCode()">📋 Copy</button>
+    <button class="eb" onclick="shareLink()">🔗 Share</button>
+    <button class="eb" id="replay-btn" onclick="startReplay()" style="display:none;background:rgba(124,106,247,.12);border-color:rgba(124,106,247,.4);color:var(--a)">▶ Replay</button>
+    <button class="eb" onclick="toggleErrMonitor()" style="background:rgba(255,107,107,.08);border-color:rgba(255,107,107,.3);color:var(--red)">🔴 Monitor</button>
+  </div>
+  <button class="dlall" id="dlall" disabled onclick="dlZip()">⬇ Download Project ZIP</button>
+</aside>
+
+</div><!-- #app -->
+
+<!-- PREVIEW MODAL -->
+<div id="prevmo">
+  <div class="prev-win">
+    <div class="pbar">
+      <div class="pdots"><div class="pd r" onclick="closePrev()"></div><div class="pd y"></div><div class="pd g" onclick="popPrev()"></div></div>
+      <div class="ptitle" id="ptitle">Preview</div>
+      <button class="cb" onclick="document.getElementById('prevmo').classList.remove('show')">✕ Close</button>
+    </div>
+    <div class="devbar">
+      <span style="font-size:.64rem;color:var(--t3);margin-right:3px">View:</span>
+      <button class="db on" id="d-desk" onclick="setDev('desk',this)">🖥 Desktop</button>
+      <button class="db" id="d-tab" onclick="setDev('tab',this)">📱 Tablet</button>
+      <button class="db" id="d-mob" onclick="setDev('mob',this)">📱 Mobile</button>
+      <div style="flex:1"></div>
+      <button class="cb run" onclick="reloadPrev()" style="font-size:.62rem">↺ Reload</button>
+    </div>
+    <div class="pload" id="pload"><div class="spin"></div><div>Rendering…</div></div>
+    <div class="pfw desk" id="pfw"><iframe id="pif" sandbox="allow-scripts allow-same-origin allow-forms" title="Preview" style="display:none"></iframe></div>
+  </div>
+</div>
+
+<!-- CODE FAB (tablet/mobile) -->
+<button id="codefab" onclick="openDrawer()" title="View Code">💻 CODE</button>
+
+<!-- CODE TOGGLE FAB (visible when right sidebar is closed) -->
+<button id="code-toggle-fab" onclick="toggleRight()">💻 CODE</button>
+
+<!-- CODE DRAWER -->
+<div id="cdrawer">
+  <div class="cdo" onclick="closeDrawer()"></div>
+  <div class="cdp"><div class="cdh"></div><div class="cdc" id="cdc"></div></div>
+</div>
+
+<!-- CONFIG MODAL — FULL API VAULT DASHBOARD -->
+<div class="mo" id="cfg-mo">
+  <div class="md" style="max-width:640px;padding:0;overflow:hidden;border-radius:var(--r3)">
+    <!-- Mobile drag handle -->
+    <div style="display:none;width:36px;height:4px;border-radius:2px;background:var(--bhi);margin:8px auto 0;flex-shrink:0" class="mob-handle"></div>
+
+    <!-- VAULT HEADER -->
+    <div style="padding:18px 20px 14px;background:linear-gradient(135deg,rgba(124,106,247,.12),rgba(0,212,255,.06));border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div style="font-family:var(--display);font-weight:800;font-size:1rem;display:flex;align-items:center;gap:8px">
+          ⚡ API Key Vault
+          <span id="vault-active-badge" style="font-size:.6rem;font-weight:700;padding:2px 8px;border-radius:10px;background:rgba(0,229,160,.12);border:1px solid rgba(0,229,160,.25);color:var(--green);font-family:var(--mono)">0 active</span>
+        </div>
+        <button onclick="testAllKeys()" id="test-all-btn" style="padding:5px 12px;border-radius:7px;background:var(--s2);border:1px solid var(--border);font-size:.68rem;font-weight:700;cursor:pointer;transition:all .15s;color:var(--t2)" onmouseover="this.style.borderColor='var(--a)';this.style.color='var(--a)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--t2)'">
+          🔬 Test All Keys
+        </button>
+        <button onclick="resetAllKeyStatuses()" title="Clear fail/limited flags so all saved keys can be retested" style="padding:5px 10px;border-radius:7px;background:var(--s2);border:1px solid var(--border);font-size:.65rem;font-weight:600;cursor:pointer;transition:all .15s;color:var(--t3)" onmouseover="this.style.borderColor='var(--yellow)';this.style.color='var(--yellow)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--t3)'">
+          🔄 Reset Statuses
+        </button>
+      </div>
+      <div style="font-size:.71rem;color:var(--t2)">Paste your keys below. NeuralForge picks the <strong style="color:var(--cyan)">best available model per task</strong> and falls back automatically.</div>
+    </div>
+
+    <!-- SCROLLABLE BODY -->
+    <div style="overflow-y:auto;max-height:68vh;padding:0">
+
+      <!-- ALL PROVIDERS GRID -->
+      <div id="vault-providers" style="display:flex;flex-direction:column;gap:0"></div>
+
+      <!-- SMART ROUTING SECTION -->
+      <div style="padding:14px 18px;border-top:1px solid var(--border);background:var(--s1)">
+        <div style="font-size:.72rem;font-weight:700;color:var(--a);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          🎯 Smart Model Routing
+          <span style="font-size:.6rem;font-weight:400;color:var(--t3)">— auto-pick or pin a provider per task</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="routing-prefs">
+          <!-- populated by renderModelPrefs() -->
+        </div>
+        <div style="margin-top:8px;padding:6px 10px;background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.12);border-radius:6px;font-size:.62rem;color:var(--t3);line-height:1.5">
+          🤖 <strong style="color:var(--t2)">Auto mode</strong> ranks all active keys by capability score and picks the strongest for each task type. Override to always use a specific provider.
+        </div>
+      </div>
+
+      <!-- ADVANCED SETTINGS -->
+      <details style="border-top:1px solid var(--border)">
+        <summary style="padding:10px 18px;font-size:.7rem;font-weight:600;color:var(--t2);cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;user-select:none">
+          <span>⚙️</span> Advanced Settings
+          <span style="margin-left:auto;font-size:.6rem;color:var(--t3)">▼</span>
+        </summary>
+        <div style="padding:0 18px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div><label class="fl" style="font-size:.62rem">Multi-Model Mode</label>
+            <select class="fsel" id="cfg-mm" style="font-size:.67rem">
+              <option value="smart">🧠 Smart (recommended)</option>
+              <option value="single">⚡ Single model</option>
+            </select>
+          </div>
+          <div><label class="fl" style="font-size:.62rem">Stream Speed</label>
+            <select class="fsel" id="cfg-speed" style="font-size:.67rem">
+              <option value="fast">⚡ Fast</option>
+              <option value="normal" selected>🎯 Normal</option>
+              <option value="slow">🐢 Slow</option>
+            </select>
+          </div>
+          <div><label class="fl" style="font-size:.62rem">🔁 Feedback Loop</label>
+            <select class="fsel" id="cfg-feedback" style="font-size:.67rem">
+              <option value="true">✅ Enabled</option><option value="false">❌ Disabled</option>
+            </select>
+          </div>
+          <div><label class="fl" style="font-size:.62rem">Max Loops</label>
+            <select class="fsel" id="cfg-maxloops" style="font-size:.67rem">
+              <option value="1">1× fast</option><option value="2" selected>2× balanced</option><option value="3">3× best</option>
+            </select>
+          </div>
+          <div><label class="fl" style="font-size:.62rem">🎯 Dynamic Routing</label>
+            <select class="fsel" id="cfg-routing" style="font-size:.67rem">
+              <option value="true">✅ Enabled</option><option value="false">❌ Disabled</option>
+            </select>
+          </div>
+          <div><label class="fl" style="font-size:.62rem">📊 Self-Evaluation</label>
+            <select class="fsel" id="cfg-selfeval" style="font-size:.67rem">
+              <option value="true">✅ Enabled</option><option value="false">❌ Disabled</option>
+            </select>
+          </div>
+          <div><label class="fl" style="font-size:.62rem">💰 Budget Cap (USD)</label>
+            <input type="number" id="cfg-budget" min="0.01" max="50" step="0.01"
+              style="width:100%;padding:5px 8px;border-radius:7px;border:1px solid var(--border);background:var(--s2);color:var(--text);font-size:.67rem;font-family:var(--body)"
+              placeholder="0.50"
+              oninput="S.budgetCap=parseFloat(this.value)||0.50;try{localStorage.setItem('nf11_budget',this.value)}catch(e){}">
+          </div>
+          <div><label class="fl" style="font-size:.62rem">🛡 Token Guard (per build)</label>
+            <select class="fsel" id="cfg-tokenguard" style="font-size:.67rem" onchange="ABORT_GUARD.MAX_TOKENS_BUILD=parseInt(this.value)||300000">
+              <option value="100000">100K (light)</option>
+              <option value="200000">200K (normal)</option>
+              <option value="300000" selected>300K (full)</option>
+              <option value="500000">500K (unlimited)</option>
+            </select>
+          </div>
+        </div>
+      </details>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div style="padding:12px 18px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;background:var(--s0)">
+      <button onclick="clearAllKeys()" style="padding:5px 11px;border-radius:7px;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.2);color:var(--red);font-size:.68rem;font-weight:600;cursor:pointer">🗑 Clear All</button>
+      <div style="flex:1;font-size:.62rem;color:var(--t3)" id="vault-save-hint">Keys saved locally in your browser</div>
+      <button class="bcnl" onclick="closeMo('cfg-mo')" style="padding:6px 13px">Cancel</button>
+      <button onclick="saveConfig()" style="padding:6px 16px;border-radius:7px;background:linear-gradient(135deg,var(--a),#9d8df5);color:#fff;font-weight:700;font-size:.75rem;cursor:pointer;border:none;font-family:var(--display)">💾 Save Vault</button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY MODAL -->
+<div class="mo" id="hist-mo">
+  <div class="md">
+    <div class="md-title">🕓 Session History</div>
+    <div class="md-sub">Click a session to restore it.</div>
+    <div class="hmlist" id="hmlist"></div>
+    <div class="ma"><button class="bcnl" onclick="closeMo('hist-mo')">Close</button><button class="bsv" style="background:linear-gradient(135deg,var(--red),#ff8e8e)" onclick="clearHistory()">Clear All</button></div>
+  </div>
+</div>
+
+<!-- TEMPLATES MODAL -->
+<div class="mo" id="tpl-mo">
+  <div class="md" style="max-width:680px">
+    <div class="md-title">🎯 Project Templates</div>
+    <div class="md-sub">Pick a template to instantly load a detailed project prompt.</div>
+    <div class="tgrid" id="tgrid"></div>
+    <div class="ma"><button class="bcnl" onclick="closeMo('tpl-mo')">Cancel</button><button class="bsv" id="use-tpl-btn" disabled onclick="useTpl()">Use Template →</button></div>
+  </div>
+</div>
+
+<!-- SHORTCUTS MODAL -->
+<div class="mo" id="sk-mo">
+  <div class="md" style="max-width:380px">
+    <div class="md-title">⌨️ Keyboard Shortcuts</div>
+    <div class="skl" style="margin-top:12px">
+      <div class="sk"><span class="sk-desc">Build / Send</span><div class="sk-keys"><span class="kbd">Ctrl</span><span class="kbd">Enter</span></div></div>
+      <div class="sk"><span class="sk-desc">Enhance prompt</span><div class="sk-keys"><span class="kbd">Ctrl</span><span class="kbd">Shift</span><span class="kbd">E</span></div></div>
+      <div class="sk"><span class="sk-desc">New session</span><div class="sk-keys"><span class="kbd">Ctrl</span><span class="kbd">Shift</span><span class="kbd">N</span></div></div>
+      <div class="sk"><span class="sk-desc">Run preview</span><div class="sk-keys"><span class="kbd">Ctrl</span><span class="kbd">Shift</span><span class="kbd">P</span></div></div>
+      <div class="sk"><span class="sk-desc">Download ZIP</span><div class="sk-keys"><span class="kbd">Ctrl</span><span class="kbd">Shift</span><span class="kbd">D</span></div></div>
+      <div class="sk"><span class="sk-desc">Templates</span><div class="sk-keys"><span class="kbd">Ctrl</span><span class="kbd">T</span></div></div>
+      <div class="sk"><span class="sk-desc">Search in code</span><div class="sk-keys"><span class="kbd">Ctrl</span><span class="kbd">F</span></div></div>
+      <div class="sk"><span class="sk-desc">Toggle sidebar</span><div class="sk-keys"><span class="kbd">Ctrl</span><span class="kbd">[</span></div></div>
+      <div class="sk"><span class="sk-desc">Toggle code panel</span><div class="sk-keys"><span class="kbd">Ctrl</span><span class="kbd">]</span></div></div>
+      <div class="sk"><span class="sk-desc">Toggle theme</span><div class="sk-keys"><span class="kbd">Ctrl</span><span class="kbd">Shift</span><span class="kbd">L</span></div></div>
+      <div class="sk"><span class="sk-desc">Stop build</span><div class="sk-keys"><span class="kbd">Ctrl</span><span class="kbd">.</span></div></div>
+      <div class="sk"><span class="sk-desc">Focus input</span><div class="sk-keys"><span class="kbd">/</span></div></div>
+      <div class="sk"><span class="sk-desc">Close modal</span><div class="sk-keys"><span class="kbd">Esc</span></div></div>
+    </div>
+    <div class="ma"><button class="bsv" onclick="closeMo('sk-mo')">Got it</button></div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<!-- V8: INLINE AI EDITOR -->
+<div id="inline-editor">
+  <div class="ie-title">✏️ AI Edit <span style="font-size:.7rem;color:var(--t3);font-weight:400" id="ie-file-label"></span></div>
+  <div class="ie-sel" id="ie-selected-text"></div>
+  <div class="ie-actions">
+    <button class="ie-btn" onclick="ieAction('fix')">🐛 Fix Bug</button>
+    <button class="ie-btn" onclick="ieAction('optimize')">🚀 Optimize</button>
+    <button class="ie-btn" onclick="ieAction('refactor')">♻️ Refactor</button>
+    <button class="ie-btn" onclick="ieAction('explain')">💡 Explain</button>
+    <button class="ie-btn" onclick="ieAction('types')">🔷 Add Types</button>
+    <button class="ie-btn" onclick="ieAction('test')">🧪 Write Tests</button>
+  </div>
+  <textarea class="ie-inp" id="ie-custom" placeholder="Or type a custom instruction… e.g. 'Add error handling'" rows="2"></textarea>
+  <div class="ie-result" id="ie-result"></div>
+  <div class="ie-footer">
+    <button class="ie-btn" onclick="closeInlineEditor()">Cancel</button>
+    <button class="ie-btn" onclick="ieApply()" id="ie-apply-btn" style="display:none">✅ Apply to File</button>
+    <button class="ie-btn primary" onclick="ieRun()" id="ie-run-btn">⚡ Run AI Edit</button>
+  </div>
+</div>
+
+<!-- V8: MEMORY MODAL -->
+<div class="mo" id="mem-mo">
+  <div class="md" style="max-width:500px">
+    <div class="md-title">🧠 Long-Term Memory</div>
+    <div class="md-sub">NeuralForge remembers facts, context and summaries across sessions.</div>
+    <div style="display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto" id="mem-mo-list"></div>
+    <div style="margin-top:12px;display:flex;gap:6px;align-items:center">
+      <input type="text" class="fin" id="mem-add-inp" placeholder="Add a memory manually… e.g. 'User prefers React'" style="flex:1"/>
+      <button class="bsv" onclick="addMemoryManual()" style="white-space:nowrap;padding:6px 12px">+ Add</button>
+    </div>
+    <div class="ma"><button class="bcnl" onclick="closeMo('mem-mo')">Close</button><button class="bsv" style="background:linear-gradient(135deg,var(--red),#ff8e8e)" onclick="clearMemory();closeMo('mem-mo')">Clear All</button></div>
+  </div>
+</div>
+
+<script src="scripts/app.js"></script>
+
+</body>
+</html>
